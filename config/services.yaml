@@ -1,0 +1,8 @@
+parameters:
+
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  Blackator\Bundle\VediMenuBundle\MenuGenerator\MenuGenerator: ~

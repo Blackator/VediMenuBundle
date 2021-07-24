@@ -1,0 +1,51 @@
+{% macro list(menu, items, menu_id, level, top, close_button) %}
+    {% import _self as tree %}
+    <ul {% if top %}id="{{ menu_id }}_top_list" {% endif%}class="{{ menu_id }}-list menu-list level-{{ level }}{% if menu.listClasses %} {{ menu.listClasses }}{% endif %}{% if top %} menu-top-list" {% endif%}">
+        {% if close_button %}
+            <li id="{{ menu_id }}_close_button" class="{{ menu_id }}-close menu-close-button menu-item" data-menu-name="{{ menu_id }}">
+                <div class="menu-link">X</div>
+            </li>
+        {% endif %}
+        {% for item in items %}
+            <li class="{{ menu_id }}-item menu-item {{ item.classes }}{% if item.isActive(app.request) %} active{% endif %}">
+                <a class="{{ menu_id }}-link menu-link{% if item.linkClasses %} {{ item.linkClasses }}{% endif %}" href="{{ item.url }}"{% if item.title %} title="{{ item.title }}" {% endif %}>
+                    {% if item.fontIcon %}<i class="{{ item.fontIcon }} menu-link-icon{% if item.caption is empty %} no-title{% endif %}"></i>{% endif %}
+                    {% if item.icon %}<img class="{{ menu_id }}-link-image menu-link-image" src="{{ item.icon }}"{% if item.caption %} alt="{{ item.caption }}"{% endif %}>{% endif %}
+                    {% if item.caption %}<span class="{{ menu_id }}-link-title menu-link-caption">{{ item.caption }}</span>{% endif %}
+                </a>
+                {% if item.items %}
+                    {{ tree.list(menu, item.items, menu_id, level + 1, false, false) }}
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% endmacro %}
+
+{% import _self as tree %}
+
+{% if menu is defined and (not maintenance or admin_mode) %}
+    {% set menu_id = 'menu_' ~ menu.name %}
+    {% set close_button = false %}
+    <nav id="{{ menu_id }}" class="{{ menu_id }} menu-nav{% if menu.classes %} {{ menu.classes }}{% endif %}{% if menu.burger and menu.burger.active %} with-burger{% endif %}">
+        {% if menu.burger %}
+            {% set close_button = true %}
+            <div id="{{ menu_id }}_burger" data-menu-name="{{ menu_id }}" class="{{ menu_id }}-burger menu-burger{% if menu.burger.classes %} {{ menu.burger.classes }}{% endif %}{% if menu.burger.display %} visible{% endif %}"{% if menu.burger.title %} title="{{ menu.burger.title }}" {% endif %}>
+                <div class="{{ menu_id }}-burger-icon burger-icon">
+                    {% if menu.burger.icon %}
+                        <img src="{{ menu.burger.icon }}">
+                    {% elseif menu.burger.fontIcon %}
+                        <i class="{{ menu.burger.fontIcon }}"></i>
+                    {% else %}
+                        <div class="{{ menu_id }}-button-burger-icon-line burger-icon-line"></div>
+                        <div class="{{ menu_id }}-button-burger-icon-line burger-icon-line"></div>
+                        <div class="{{ menu_id }}-button-burger-icon-line burger-icon-line"></div>
+                    {% endif %}
+                </div>
+                {% if menu.burger.caption %}
+                    <div class="{{ menu_id }}-burger-caption burger-caption">{{ menu.burger.caption }}</div>
+                {% endif %}
+            </div>
+        {% endif %}
+        {{ tree.list(menu, menu.items, menu_id, 0, true, close_button) }}
+    </nav>
+{% endif %}
