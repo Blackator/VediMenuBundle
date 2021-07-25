@@ -17,5 +17,4 @@ class VediMenuExtension extends Extension
         );
         $loader->load('services.yaml');
     }
-
 }
