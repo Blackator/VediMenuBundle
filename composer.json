@@ -1,6 +1,7 @@
 {
     "name": "blackator/vedi-menu-bundle",
     "description": "Menu bundle for Symfony",
+    "version": "0.1.0",
     "type": "symfony-bundle",
     "license": "MIT",
     "authors": [
@@ -19,5 +20,11 @@
     },
     "autoload": {
         "psr-4": { "Blackator\\Bundle\\VediMenuBundle\\": "/src" }
+    },
+    "extra": {
+        "symfony": {
+            "id": "01C1K60FQVPP7FN6BCDB6639RZ",
+            "allow-contrib": false
+        }
     }
 }
