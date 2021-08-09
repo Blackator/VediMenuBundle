@@ -6,3 +6,4 @@ services:
     autoconfigure: true
 
   Blackator\Bundle\VediMenuBundle\MenuGenerator\MenuGenerator: ~
+  Blackator\Bundle\VediMenuBundle\Twig\VediMenuTwigExtension: ~
