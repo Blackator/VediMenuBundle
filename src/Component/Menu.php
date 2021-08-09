@@ -18,10 +18,12 @@ class Menu
     protected $burger;
     protected $items;
 
+    const DEFAULT_TEMPLATE = '@VediMenu/default.html.twig';
+
     public function __construct(string $name = '')
     {
         $this->name = $name;
-        $this->template = '@VediMenuBundle/default/html.twig';
+        $this->template = self::DEFAULT_TEMPLATE;
         $this->items = new MenuItemsCollection();
     }
 
@@ -61,7 +63,7 @@ class Menu
      */
     public function setTemplate(string $template): self
     {
-        $this->template = empty($template) ? '@VediMenuBundle/default/html.twig' : $template;
+        $this->template = empty($template) ? self::DEFAULT_TEMPLATE : $template;
         return $this;
     }
 

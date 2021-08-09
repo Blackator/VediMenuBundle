@@ -10,17 +10,20 @@ use Blackator\Bundle\VediMenuBundle\Loaders\MenuLoaderInterface;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 class MenuGenerator
 {
     protected $urlGenerator;
     protected $translator;
+    protected $twig;
     protected $translatorDomain = 'messages';
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, TranslatorInterface $translator)
+    public function __construct(UrlGeneratorInterface $urlGenerator, TranslatorInterface $translator, Environment $twig)
     {
         $this->urlGenerator = $urlGenerator;
         $this->translator = $translator;
+        $this->twig = $twig;
     }
 
     /**
@@ -91,7 +94,7 @@ class MenuGenerator
     public function create(string $name, MenuLoaderInterface $loader): Menu
     {
         $data = $loader->load();
-        if (!empty($data[$name])) return $this->build($data[$name]);
+        if (!empty($data[$name])) return $this->build($name, $data[$name]);
         return $this->build($name, $data);
     }
 
@@ -123,11 +126,11 @@ class MenuGenerator
     {
         if (!isset($data['burger'])) return null;
         $burger = new Burger();
-        if (isset($data['burger']['caption'])) $burger->setCaption($data['burger']['caption']);
-        if (isset($data['burger']['title'])) $burger->setCaption($data['burger']['title']);
-        if (isset($data['burger']['classes'])) $burger->setCaption($data['burger']['classes']);
-        if (isset($data['burger']['icon'])) $burger->setCaption($data['burger']['icon']);
-        if (isset($data['burger']['font_icon'])) $burger->setCaption($data['burger']['font_icon']);
+        if (!empty($data['burger']['caption'])) $burger->setCaption($this->translator->trans($data['burger']['caption'], [], $this->translatorDomain));
+        if (!empty($data['burger']['title'])) $burger->setTitle($this->translator->trans($data['burger']['title'], [], $this->translatorDomain));
+        if (isset($data['burger']['classes'])) $burger->setClasses($data['burger']['classes']);
+        if (isset($data['burger']['icon'])) $burger->setIcon($data['burger']['icon']);
+        if (isset($data['burger']['font_icon'])) $burger->setFontIcon($data['burger']['font_icon']);
         return $burger;
     }
 
@@ -160,8 +163,8 @@ class MenuGenerator
                     }
                 }
                 if (isset($itemData['index'])) $item->setIndex($itemData['index']);
-                if (isset($itemData['caption'])) $item->setCaption($itemData['caption']);
-                if (isset($itemData['title'])) $item->setTitle($itemData['title']);
+                if (!empty($itemData['caption'])) $item->setCaption($this->translator->trans($itemData['caption'], [], $this->translatorDomain));
+                if (isset($itemData['title'])) $item->setTitle($this->translator->trans($itemData['title'], [], $this->translatorDomain));
                 if (isset($itemData['roles'])) $item->setRoles($itemData['roles']);
                 if (isset($itemData['classes'])) $item->setClasses($itemData['classes']);
                 if (isset($itemData['link_classes'])) $item->setLinkClasses($itemData['link_classes']);
@@ -174,5 +177,13 @@ class MenuGenerator
             }
         }
         return $collection;
+    }
+
+    public function render(Menu $menu, array $params = []): string
+    {
+        $params['menu'] = $menu;
+        $params['maintenance'] = false;
+        $params['admin_mode'] = false;
+        return $this->twig->render($menu->getTemplate(), $params);
     }
 }
