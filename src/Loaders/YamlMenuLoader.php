@@ -1,100 +1,27 @@
 <?php
 
-namespace Blackator\Bundle\VediMenuBundle\MenuGenerator;
+namespace Blackator\Bundle\VediMenuBundle\Loaders;
 
 use Blackator\Bundle\VediMenuBundle\Component\Burger;
+use Blackator\Bundle\VediMenuBundle\Component\CloseButton;
 use Blackator\Bundle\VediMenuBundle\Component\Menu;
 use Blackator\Bundle\VediMenuBundle\Component\MenuItem;
 use Blackator\Bundle\VediMenuBundle\Component\MenuItemsCollection;
-use Blackator\Bundle\VediMenuBundle\Loaders\MenuLoaderInterface;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
-use Twig\Environment;
+use Symfony\Component\Yaml\Yaml;
 
-class MenuGenerator
+class YamlMenuLoader extends AbstractMenuLoader
 {
-    protected $urlGenerator;
-    protected $translator;
-    protected $twig;
-    protected $translatorDomain = 'messages';
-
-    public function __construct(UrlGeneratorInterface $urlGenerator, TranslatorInterface $translator, Environment $twig)
-    {
-        $this->urlGenerator = $urlGenerator;
-        $this->translator = $translator;
-        $this->twig = $twig;
-    }
-
     /**
-     * Get URL generator
-     * @return UrlGeneratorInterface
-     */
-    public function getUrlGenerator(): UrlGeneratorInterface
-    {
-        return $this->urlGenerator;
-    }
-
-    /**
-     * Set URL generator
-     * @param UrlGeneratorInterface $urlGenerator URL generator
-     * @return $this
-     */
-    public function setUrlGenerator(UrlGeneratorInterface $urlGenerator): self
-    {
-        $this->urlGenerator = $urlGenerator;
-        return $this;
-    }
-
-    /**
-     * Get translator
-     * @return TranslatorInterface
-     */
-    public function getTranslator(): TranslatorInterface
-    {
-        return $this->translator;
-    }
-
-    /**
-     * Set translator
-     * @param TranslatorInterface $translator
-     * @return $this
-     */
-    public function setTranslator(TranslatorInterface $translator): self
-    {
-        $this->translator = $translator;
-        return $this;
-    }
-
-    /**
-     * get translator domain
-     * @return string
-     */
-    public function getTranslatorDomain(): string
-    {
-        return $this->translatorDomain;
-    }
-
-    /**
-     * Set translator domain
-     * @param string $translatorDomain
-     * @return $this
-     */
-    public function setTranslatorDomain(string $translatorDomain = 'messages'): self
-    {
-        $this->translatorDomain = $translatorDomain;
-        return $this;
-    }
-
-    /**
-     * Create menu
-     * @param MenuLoaderInterface|null $loader Menu loader
+     * Create Menu from YAML-file
+     * @param string $name Name of menu
      * @return Menu
      */
-    public function create(string $name, MenuLoaderInterface $loader): Menu
+    public function create(string $name, string $filename): Menu
     {
-        $data = $loader->load();
-        if (!empty($data[$name])) return $this->build($name, $data[$name]);
+        if (!file_exists($filename)) throw new FileNotFoundException();
+        $data = Yaml::parseFile($filename);
         return $this->build($name, $data);
     }
 
@@ -113,13 +40,14 @@ class MenuGenerator
         $menu->setLinkClasses(isset($data['link_classes']) ? $data['link_classes'] : '');
         $this->translatorDomain = isset($data['translation_domain']) ? $data['translation_domain'] : '';
         $menu->setBurger($this->buildBurger($data));
+        $menu->setCloseButton($this->buildCloseButton($data));
         $menu->setItems($this->buildItems($data));
         return $menu;
     }
 
     /**
      * Build burger from array
-     * @param array $burgerData Burger array
+     * @param array $data Loaded array
      * @return Burger|null
      */
     protected function buildBurger(array $data): ?Burger
@@ -132,6 +60,23 @@ class MenuGenerator
         if (isset($data['burger']['icon'])) $burger->setIcon($data['burger']['icon']);
         if (isset($data['burger']['font_icon'])) $burger->setFontIcon($data['burger']['font_icon']);
         return $burger;
+    }
+
+    /**
+     * Build close button from array
+     * @param array $data Loaded array
+     * @return CloseButton|null
+     */
+    protected function buildCloseButton(array $data): ?CloseButton
+    {
+        if (!isset($data['close_button'])) return null;
+        $close_button = new CloseButton();
+        if (!empty($data['close_button']['caption'])) $close_button->setCaption($this->translator->trans($data['close_button']['caption'], [], $this->translatorDomain));
+        if (!empty($data['close_button']['title'])) $close_button->setTitle($this->translator->trans($data['close_button']['title'], [], $this->translatorDomain));
+        if (isset($data['close_button']['classes'])) $close_button->setClasses($data['close_button']['classes']);
+        if (isset($data['close_button']['icon'])) $close_button->setIcon($data['close_button']['icon']);
+        if (isset($data['close_button']['font_icon'])) $close_button->setFontIcon($data['close_button']['font_icon']);
+        return $close_button;
     }
 
     /**
@@ -177,13 +122,5 @@ class MenuGenerator
             }
         }
         return $collection;
-    }
-
-    public function render(Menu $menu, array $params = []): string
-    {
-        $params['menu'] = $menu;
-        $params['maintenance'] = false;
-        $params['admin_mode'] = false;
-        return $this->twig->render($menu->getTemplate(), $params);
     }
 }

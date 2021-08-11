@@ -16,6 +16,7 @@ class Menu
     protected $itemClasses = '';
     protected $linkClasses = '';
     protected $burger;
+    protected $closeButton;
     protected $items;
 
     const DEFAULT_TEMPLATE = '@VediMenu/default.html.twig';
@@ -164,6 +165,26 @@ class Menu
     public function setBurger(?Burger $burger = null): self
     {
         $this->burger = $burger;
+        return $this;
+    }
+
+    /**
+     * Get close button
+     * @return CloseButton|null
+     */
+    public function getCloseButton(): ?CloseButton
+    {
+        return $this->closeButton;
+    }
+
+    /**
+     * Set close button
+     * @param CloseButton|null $closeButton
+     * @return $this
+     */
+    public function setCloseButton(?CloseButton $closeButton): self
+    {
+        $this->closeButton = $closeButton;
         return $this;
     }
 

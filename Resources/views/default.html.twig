@@ -1,10 +1,12 @@
-{% macro list(menu, items, menu_id, level, top, close_button) %}
+{% macro list(menu, items, menu_id, level, top) %}
     {% import _self as tree %}
     <ul {% if top %}id="{{ menu_id }}_top_list" {% endif%}class="{{ menu_id }}-list menu-list level-{{ level }}{% if menu.listClasses %} {{ menu.listClasses }}{% endif %}{% if top %} menu-top-list" {% endif%}">
-        {% if close_button %}
-            <li id="{{ menu_id }}_close_button" class="{{ menu_id }}-close menu-close-button menu-item" data-menu-name="{{ menu_id }}">
-                <div class="menu-link">X</div>
-            </li>
+        {% if level == 0 and menu.closeButton %}
+            <div id="{{ menu_id }}_close_button" class="{{ menu_id }}-close menu-close-button menu-item" data-menu-name="{{ menu_id }}"{% if menu.closeButton.title %} title="{{ menu.closeButton.title }}" {% endif %}>
+                {% if menu.closeButton.fontIcon %}<i class="{{ menu.closeButton.fontIcon }} menu-link-icon{% if menu.closeButton.caption is empty %} no-title{% endif %}"></i>{% endif %}
+                {% if menu.closeButton.icon %}<img class="{{ menu_id }}-link-image menu-link-image" src="{{ menu.closeButton.icon }}"{% if menu.closeButton.caption %} alt="{{ menu.closeButton.caption }}"{% endif %}>{% endif %}
+                {% if menu.closeButton.caption %}<span class="{{ menu_id }}-link-title menu-link-caption">{{ menu.closeButton.caption }}</span>{% endif %}
+            </div>
         {% endif %}
         {% for item in items %}
             <li class="{{ menu_id }}-item menu-item {{ item.classes }}{% if item.isActive(app.request) %} active{% endif %}">
@@ -28,7 +30,6 @@
     {% set close_button = false %}
     <nav id="{{ menu_id }}" class="{{ menu_id }} menu-nav{% if menu.classes %} {{ menu.classes }}{% endif %}{% if menu.burger %} with-burger{% endif %}">
         {% if menu.burger %}
-            {% set close_button = true %}
             <div id="{{ menu_id }}_burger" data-menu-name="{{ menu_id }}" class="{{ menu_id }}-burger menu-burger{% if menu.burger.classes %} {{ menu.burger.classes }}{% endif %}"{% if menu.burger.title %} title="{{ menu.burger.title }}" {% endif %}>
                 <div class="{{ menu_id }}-burger-icon burger-icon">
                     {% if menu.burger.icon %}
@@ -46,6 +47,6 @@
                 {% endif %}
             </div>
         {% endif %}
-        {{ tree.list(menu, menu.items, menu_id, 0, true, close_button) }}
+        {{ tree.list(menu, menu.items, menu_id, 0, true) }}
     </nav>
 {% endif %}

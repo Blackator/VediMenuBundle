@@ -5,5 +5,5 @@ services:
     autowire: true
     autoconfigure: true
 
-  Blackator\Bundle\VediMenuBundle\MenuGenerator\MenuGenerator: ~
   Blackator\Bundle\VediMenuBundle\Twig\VediMenuTwigExtension: ~
+  Blackator\Bundle\VediMenuBundle\Loaders\YamlMenuLoader: ~

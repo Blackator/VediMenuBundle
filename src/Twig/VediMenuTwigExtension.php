@@ -3,17 +3,17 @@
 namespace Blackator\Bundle\VediMenuBundle\Twig;
 
 use Blackator\Bundle\VediMenuBundle\Component\Menu;
-use Blackator\Bundle\VediMenuBundle\MenuGenerator\MenuGenerator;
+use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class VediMenuTwigExtension extends AbstractExtension
 {
-    private $menuGenerator;
+    private $twig;
 
-    public function __construct(MenuGenerator $menuGenerator)
+    public function __construct(Environment $twig)
     {
-        $this->menuGenerator = $menuGenerator;
+        $this->twig = $twig;
     }
 
     public function getFunctions()
@@ -29,6 +29,9 @@ class VediMenuTwigExtension extends AbstractExtension
 
     public function renderMenu(Menu $menu, array $params = []): string
     {
-        return $this->menuGenerator->render($menu, $params);
+        $params['menu'] = $menu;
+        if (!isset($params['maintenance'])) $params['maintenance'] = false;
+        if (!isset($params['admin_mode'])) $params['admin_mode'] = false;
+        return $this->twig->render($menu->getTemplate(), $params);
     }
 }
