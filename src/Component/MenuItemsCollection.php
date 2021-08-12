@@ -63,14 +63,14 @@ class MenuItemsCollection implements \Iterator, \ArrayAccess
     public function sortByIndex()
     {
         usort($this->items, function ($a, $b) {
-            return ($a->index <=> $b->index);
+            return ($a->getIndex() <=> $b->getIndex());
         });
     }
 
     public function sortByCaption()
     {
         usort($this->items, function ($a, $b) {
-            return ($a->caption <=> $b->caption);
+            return ($a->getCaption() <=> $b->getCaption());
         });
     }
 }

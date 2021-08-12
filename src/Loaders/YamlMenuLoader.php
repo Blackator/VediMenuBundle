@@ -13,15 +13,42 @@ use Symfony\Component\Yaml\Yaml;
 
 class YamlMenuLoader extends AbstractMenuLoader
 {
+    protected $file = '';
+
+    public function __construct(string $file)
+    {
+        $this->setFilename($file);
+    }
+
+    /**
+     * Get file path
+     * @return string
+     */
+    public function getFile(): string
+    {
+        return $this->file;
+    }
+
+    /**
+     * Set file path
+     * @param string $file File path
+     * @return $this
+     */
+    public function setFilename(string $file): self
+    {
+        $this->file = $file;
+        return $this;
+    }
+
     /**
      * Create Menu from YAML-file
      * @param string $name Name of menu
      * @return Menu
      */
-    public function create(string $name, string $filename): Menu
+    public function load(string $name): Menu
     {
-        if (!file_exists($filename)) throw new FileNotFoundException();
-        $data = Yaml::parseFile($filename);
+        if (!file_exists($this->file)) throw new FileNotFoundException();
+        $data = Yaml::parseFile($this->file);
         return $this->build($name, $data);
     }
 
@@ -107,6 +134,7 @@ class YamlMenuLoader extends AbstractMenuLoader
                         }
                     }
                 }
+                if (isset($itemData['disabled'])) $item->setDisabled((bool)$itemData['disabled']);
                 if (isset($itemData['index'])) $item->setIndex($itemData['index']);
                 if (!empty($itemData['caption'])) $item->setCaption($this->translator->trans($itemData['caption'], [], $this->translatorDomain));
                 if (isset($itemData['title'])) $item->setTitle($this->translator->trans($itemData['title'], [], $this->translatorDomain));
@@ -118,7 +146,7 @@ class YamlMenuLoader extends AbstractMenuLoader
                 if (isset($itemData['routes'])) $item->setRoutes($itemData['routes']);
                 if (isset($itemData['urls'])) $item->setUrls($itemData['urls']);
                 $item->setItems($this->buildItems($itemData));
-                $collection[] = $item;
+                if ($this->checkRoles($item) && !$item->getDisabled()) $collection[] = $item;
             }
         }
         return $collection;

@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 class MenuItem
 {
     protected $name;
+    protected $disabled = false;
     protected $index = 0;
     protected $caption = '';
     protected $title = '';
@@ -59,6 +60,26 @@ class MenuItem
     public function setName(string $name): self
     {
         $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * Get disabled mode
+     * @return bool
+     */
+    public function getDisabled(): bool
+    {
+        return $this->disabled;
+    }
+
+    /**
+     * Set disabled mode
+     * @param bool $disabled Disabled mode state
+     * @return $this
+     */
+    public function setDisabled(bool $disabled): self
+    {
+        $this->disabled = $disabled;
         return $this;
     }
 

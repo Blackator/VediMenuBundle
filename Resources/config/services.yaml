@@ -6,4 +6,4 @@ services:
     autoconfigure: true
 
   Blackator\Bundle\VediMenuBundle\Twig\VediMenuTwigExtension: ~
-  Blackator\Bundle\VediMenuBundle\Loaders\YamlMenuLoader: ~
+  Blackator\Bundle\VediMenuBundle\Service\VediMenu: ~

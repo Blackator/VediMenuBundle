@@ -30,8 +30,6 @@ class VediMenuTwigExtension extends AbstractExtension
     public function renderMenu(Menu $menu, array $params = []): string
     {
         $params['menu'] = $menu;
-        if (!isset($params['maintenance'])) $params['maintenance'] = false;
-        if (!isset($params['admin_mode'])) $params['admin_mode'] = false;
         return $this->twig->render($menu->getTemplate(), $params);
     }
 }

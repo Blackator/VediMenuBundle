@@ -2,11 +2,6 @@
 
 namespace Blackator\Bundle\VediMenuBundle\Component;
 
-use Blackator\Bundle\VediMenuBundle\Loaders\MenuLoaderInterface;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
-
 class Menu
 {
     protected $name;

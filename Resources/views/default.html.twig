@@ -25,7 +25,7 @@
 
 {% import _self as tree %}
 
-{% if menu is defined and (not maintenance or admin_mode) %}
+{% if menu is defined %}
     {% set menu_id = 'menu_' ~ menu.name %}
     {% set close_button = false %}
     <nav id="{{ menu_id }}" class="{{ menu_id }} menu-nav{% if menu.classes %} {{ menu.classes }}{% endif %}{% if menu.burger %} with-burger{% endif %}">

@@ -19,6 +19,7 @@ Usage
 namespace App\Controller;
 
 use Blackator\Bundle\VediMenuBundle\Loaders\YamlMenuLoader;
+use Blackator\Bundle\VediMenuBundle\Service\VediMenu;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -28,10 +29,9 @@ class HomeController extends AbstractController
     /**
      * @Route("/", name="home")
      */
-    public function index(YamlMenuLoader $menuLoader): Response
+    public function index(VediMenu $vediMenu): Response
     {
-        $menuLoader->setFilename('/home/blackator/www/bundles/BundlesTest/config/menu/main_menu.yaml');
-        $menu = $menuLoader->load('main');
+        $menu = $vediMenu->create(new YamlMenuLoader($this->getParameter('kernel.project_dir') . '/config/menu/main_menu.yaml'), 'main');
         return $this->render('home/index.html.twig', ['menu' => $menu]);
     }
 }
@@ -41,6 +41,8 @@ In twig template
 {{ render_menu(menu) }}
 ```
 
-**YamlMenuLoader** - a class for creating a Menu object from YAML file data.
+**VediMenu** - a service for creating a Menu object from loader's data
 
-The default TWIG template is located at vendor/blackator/Resources/views/default.html.twig.
+**YamlMenuLoader** - a class for loading data from YAML file. Extended `Blackator\Bundle\VediMenuBundle\Loaders\AbstractMenuLoader`.
+
+The default TWIG template is located at `vendor/blackator/vedi-menu-bundle/Resources/views/default.html.twig` or `@VediMenu/default.html.twig` as TWIG path.
