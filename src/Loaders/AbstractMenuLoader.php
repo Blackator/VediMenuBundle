@@ -5,6 +5,7 @@ namespace Blackator\Bundle\VediMenuBundle\Loaders;
 use Blackator\Bundle\VediMenuBundle\Component\Menu;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
 /**
@@ -25,12 +26,12 @@ abstract class AbstractMenuLoader
      * @param Security $security Security
      * @return $this
      */
-    public function setServices(UrlGeneratorInterface $urlGenerator, Environment $twig, Security $security, $translator = null): self
+    public function setServices(UrlGeneratorInterface $urlGenerator, Environment $twig, Security $security, ?TranslatorInterface $translator): self
     {
         $this->urlGenerator = $urlGenerator;
         $this->twig = $twig;
         $this->security = $security;
-        if ($translator === null || in_array('Symfony\Contracts\Translation\TranslatorInterface', class_implements($translator, false))) $this->translator = $translator;
+        $this->translator = $translator;
         return $this;
     }
 

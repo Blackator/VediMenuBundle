@@ -4,9 +4,9 @@ namespace Blackator\Bundle\VediMenuBundle\Service;
 
 use Blackator\Bundle\VediMenuBundle\Component\Menu;
 use Blackator\Bundle\VediMenuBundle\Loaders\AbstractMenuLoader;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
 /**
@@ -20,11 +20,11 @@ class VediMenu
     protected $security;
     protected $nameIndex = 1;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, Environment $twig, Security $security, ContainerInterface $container)
+    public function __construct(UrlGeneratorInterface $urlGenerator, Environment $twig, Security $security, ?TranslatorInterface $translator)
     {
         $this->urlGenerator = $urlGenerator;
         $this->twig = $twig;
-        if ($container->has('translator')) $this->translator = $container->get('translator');
+        $this->translator = $translator;
         $this->security = $security;
     }
 
