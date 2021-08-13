@@ -7,7 +7,6 @@ use Blackator\Bundle\VediMenuBundle\Loaders\AbstractMenuLoader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Security;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
 /**
@@ -21,11 +20,11 @@ class VediMenu
     protected $security;
     protected $nameIndex = 1;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, TranslatorInterface $translator, Security $security, ContainerInterface $container)
+    public function __construct(UrlGeneratorInterface $urlGenerator, Environment $twig, Security $security, ContainerInterface $container)
     {
         $this->urlGenerator = $urlGenerator;
-        $this->translator = $translator;
-        if ($container->has('twig')) $this->twig = $container->get('twig');
+        $this->twig = $twig;
+        if ($container->has('translator')) $this->translator = $container->get('translator');
         $this->security = $security;
     }
 

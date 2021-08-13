@@ -1,7 +1,7 @@
 {
     "name": "blackator/vedi-menu-bundle",
     "description": "Menu bundle for Symfony",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "type": "symfony-bundle",
     "license": "MIT",
     "authors": [
