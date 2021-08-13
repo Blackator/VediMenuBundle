@@ -61,6 +61,13 @@ class YamlMenuLoader extends AbstractMenuLoader
     {
         $menu = new Menu($name);
         if (isset($data['template'])) $menu->setTemplate($data['template']);
+        if (!empty($data['roles'])) {
+            if (is_array($data['roles'])) {
+                $menu->setRoles($data['roles']);
+            } else {
+                $menu->setRoles(preg_split("/[\s,]+/", (string)$data['roles'], 0, PREG_SPLIT_NO_EMPTY));
+            }
+        }
         $menu->setClasses(isset($data['classes']) ? $data['classes'] : '');
         $menu->setListClasses(isset($data['list_classes']) ? $data['list_classes'] : '');
         $menu->setItemClasses(isset($data['item_classes']) ? $data['item_classes'] : '');
@@ -68,7 +75,7 @@ class YamlMenuLoader extends AbstractMenuLoader
         $this->translatorDomain = isset($data['translation_domain']) ? $data['translation_domain'] : '';
         $menu->setBurger($this->buildBurger($data));
         $menu->setCloseButton($this->buildCloseButton($data));
-        $menu->setItems($this->buildItems($data));
+        if ($this->checkRoles($menu->getRoles())) $menu->setItems($this->buildItems($data));
         return $menu;
     }
 
@@ -81,8 +88,8 @@ class YamlMenuLoader extends AbstractMenuLoader
     {
         if (!isset($data['burger'])) return null;
         $burger = new Burger();
-        if (!empty($data['burger']['caption'])) $burger->setCaption($this->translator->trans($data['burger']['caption'], [], $this->translatorDomain));
-        if (!empty($data['burger']['title'])) $burger->setTitle($this->translator->trans($data['burger']['title'], [], $this->translatorDomain));
+        if (!empty($data['burger']['caption'])) $burger->setCaption($this->trans($data['burger']['caption'], [], $this->translatorDomain));
+        if (!empty($data['burger']['title'])) $burger->setTitle($this->trans($data['burger']['title'], [], $this->translatorDomain));
         if (isset($data['burger']['classes'])) $burger->setClasses($data['burger']['classes']);
         if (isset($data['burger']['icon'])) $burger->setIcon($data['burger']['icon']);
         if (isset($data['burger']['font_icon'])) $burger->setFontIcon($data['burger']['font_icon']);
@@ -98,8 +105,8 @@ class YamlMenuLoader extends AbstractMenuLoader
     {
         if (!isset($data['close_button'])) return null;
         $close_button = new CloseButton();
-        if (!empty($data['close_button']['caption'])) $close_button->setCaption($this->translator->trans($data['close_button']['caption'], [], $this->translatorDomain));
-        if (!empty($data['close_button']['title'])) $close_button->setTitle($this->translator->trans($data['close_button']['title'], [], $this->translatorDomain));
+        if (!empty($data['close_button']['caption'])) $close_button->setCaption($this->trans($data['close_button']['caption'], [], $this->translatorDomain));
+        if (!empty($data['close_button']['title'])) $close_button->setTitle($this->trans($data['close_button']['title'], [], $this->translatorDomain));
         if (isset($data['close_button']['classes'])) $close_button->setClasses($data['close_button']['classes']);
         if (isset($data['close_button']['icon'])) $close_button->setIcon($data['close_button']['icon']);
         if (isset($data['close_button']['font_icon'])) $close_button->setFontIcon($data['close_button']['font_icon']);
@@ -136,9 +143,15 @@ class YamlMenuLoader extends AbstractMenuLoader
                 }
                 if (isset($itemData['disabled'])) $item->setDisabled((bool)$itemData['disabled']);
                 if (isset($itemData['index'])) $item->setIndex($itemData['index']);
-                if (!empty($itemData['caption'])) $item->setCaption($this->translator->trans($itemData['caption'], [], $this->translatorDomain));
-                if (isset($itemData['title'])) $item->setTitle($this->translator->trans($itemData['title'], [], $this->translatorDomain));
-                if (isset($itemData['roles'])) $item->setRoles($itemData['roles']);
+                if (!empty($itemData['caption'])) $item->setCaption($this->trans($itemData['caption'], [], $this->translatorDomain));
+                if (isset($itemData['title'])) $item->setTitle($this->trans($itemData['title'], [], $this->translatorDomain));
+                if (isset($itemData['roles'])) {
+                    if (is_array($itemData['roles'])) {
+                        $item->setRoles($itemData['roles']);
+                    } else {
+                        $item->setRoles(preg_split("/[\s,]+/", (string)$itemData['roles'], 0, PREG_SPLIT_NO_EMPTY));
+                    }
+                }
                 if (isset($itemData['classes'])) $item->setClasses($itemData['classes']);
                 if (isset($itemData['link_classes'])) $item->setLinkClasses($itemData['link_classes']);
                 if (isset($itemData['icon'])) $item->setIcon($itemData['icon']);
@@ -146,7 +159,7 @@ class YamlMenuLoader extends AbstractMenuLoader
                 if (isset($itemData['routes'])) $item->setRoutes($itemData['routes']);
                 if (isset($itemData['urls'])) $item->setUrls($itemData['urls']);
                 $item->setItems($this->buildItems($itemData));
-                if ($this->checkRoles($item) && !$item->getDisabled()) $collection[] = $item;
+                if ($this->checkRoles($item->getRoles()) && !$item->getDisabled()) $collection[] = $item;
             }
         }
         return $collection;

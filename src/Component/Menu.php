@@ -2,10 +2,14 @@
 
 namespace Blackator\Bundle\VediMenuBundle\Component;
 
+/**
+ * This class contains menu data such as burger, close button, item collection, permissions, html classes, etc.
+ */
 class Menu
 {
     protected $name;
     protected $template;
+    protected $roles = [];
     protected $classes = '';
     protected $listClasses = '';
     protected $itemClasses = '';
@@ -21,6 +25,15 @@ class Menu
         $this->name = $name;
         $this->template = self::DEFAULT_TEMPLATE;
         $this->items = new MenuItemsCollection();
+    }
+
+    /**
+     * Is items collection empty?
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return $this->items->isEmpty();
     }
 
     /**
@@ -60,6 +73,26 @@ class Menu
     public function setTemplate(string $template): self
     {
         $this->template = empty($template) ? self::DEFAULT_TEMPLATE : $template;
+        return $this;
+    }
+
+    /**
+     * Get roles
+     * @return array
+     */
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    /**
+     * Set roles
+     * @param array $roles Roles array
+     * @return $this
+     */
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
         return $this;
     }
 

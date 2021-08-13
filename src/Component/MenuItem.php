@@ -4,6 +4,10 @@ namespace Blackator\Bundle\VediMenuBundle\Component;
 
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * This class contains menu item data
+ * such as collection of subelements, title, link, icon, permissions, html classes, etc.
+ */
 class MenuItem
 {
     protected $name;

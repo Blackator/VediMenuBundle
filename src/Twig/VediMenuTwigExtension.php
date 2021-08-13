@@ -7,6 +7,9 @@ use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
+/**
+ * This class contains TWIG extensions to improve the usability of menus.
+ */
 class VediMenuTwigExtension extends AbstractExtension
 {
     private $twig;
@@ -27,6 +30,15 @@ class VediMenuTwigExtension extends AbstractExtension
         ];
     }
 
+    /**
+     * Rendering the menu according to the specified template.
+     * @param Menu $menu Rendering menu
+     * @param array $params Rendering options
+     * @return string
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
     public function renderMenu(Menu $menu, array $params = []): string
     {
         $params['menu'] = $menu;

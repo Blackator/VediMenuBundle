@@ -2,9 +2,19 @@
 
 namespace Blackator\Bundle\VediMenuBundle\Component;
 
-class MenuItemsCollection implements \Iterator, \ArrayAccess
+class MenuItemsCollection implements \Iterator, \ArrayAccess, \Countable
 {
     protected $items = [];
+
+    public function isEmpty(): bool
+    {
+        return empty($this->items);
+    }
+
+    public function count()
+    {
+        return count($this->items);
+    }
 
     public function current(): ?MenuItem
     {
